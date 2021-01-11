@@ -9,19 +9,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+@Component
 public class SolarSwitch {
 
     private static Logger logger = LoggerFactory.getLogger(SolarSwitch.class);
-
-    @Autowired
-    private JavaMailSender javaMailSender;
-
     private static final String switchOnString = "on";
     private static final String switchOffString = "off";
-    private final GpioController gpio = GpioFactory.getInstance();
-    private final GpioPinDigitalOutput ledPin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_00);
+
+    private JavaMailSender javaMailSender;
+
+    //private final GpioController gpio = GpioFactory.getInstance();
+    //private final GpioPinDigitalOutput ledPin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_00);
+
+    public SolarSwitch(JavaMailSender javaMailSender) {
+        this.javaMailSender = javaMailSender;
+    }
 
     public void setSwitch(String url, boolean switchOn, int boilertemp, int hourHeating, int hourHeating48) {
         /** create gpio controller */
@@ -43,7 +48,6 @@ public class SolarSwitch {
                                 "Heizdauer nächster Tag =" + hourHeating + "\n" +
                                 "Heizdauer nächsten 48h = " + hourHeating48);
             mailMessage.setFrom("p-andres@gmx.ch");
-            logger.info("Mail send ");
             javaMailSender.send(mailMessage);
         } else {
             //set led
@@ -52,7 +56,10 @@ public class SolarSwitch {
             String html = restTemplate.getForObject(url, String.class, switchOffString);
             mailMessage.setTo("p-andres@gmx.ch");
             mailMessage.setSubject("Solar-App-Info");
-            mailMessage.setText("Please switch the water heater to OFF");
+            mailMessage.setText("Please switch the water heater to OFF \n " +
+                    "Boilertemperatur = " + boilertemp + "\n" +
+                    "Heizdauer nächster Tag =" + hourHeating + "\n" +
+                    "Heizdauer nächsten 48h = " + hourHeating48);
             mailMessage.setFrom("p-andres@gmx.ch");
         }
         logger.info("Mail sending ");

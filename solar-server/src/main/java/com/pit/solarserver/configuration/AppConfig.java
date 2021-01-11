@@ -2,6 +2,7 @@ package com.pit.solarserver.configuration;
 
 import com.pit.solarserver.model.CurrentMeasuredData;
 import com.pit.solarserver.model.OpenWeatherData;
+import com.pit.solarserver.model.SolarSwitch;
 import com.pit.solarserver.model.TemperaturSensor;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;

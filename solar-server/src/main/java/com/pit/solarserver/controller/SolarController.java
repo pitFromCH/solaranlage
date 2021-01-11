@@ -19,7 +19,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RequestMapping(value = "/data")
@@ -45,15 +44,12 @@ public class SolarController {
         this.solarService = solarService;
     }
 
-    @CrossOrigin(origins = "*")
     @GetMapping(produces = APPLICATION_JSON_VALUE)
     public ResponseEntity getSolarData(@RequestParam("from") @DateTimeFormat(pattern = "dd.MM.yyyy") Date from, @RequestParam("to") @DateTimeFormat(pattern = "dd.MM.yyyy") Date to) {
         SimpleDateFormat formater = new SimpleDateFormat("dd.MM.yyyy");
         logger.info("Rest-API-Call: getSolarData() from " + formater.format(from) + ", to " +  formater.format(to));
 
-
         DTOSolarDataDAO dtoSolarData = solarService.getSolarData(new java.sql.Date(from.getTime()), new java.sql.Date(to.getTime()));
-
         if (dtoSolarData == null) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         } else {
@@ -71,7 +67,6 @@ public class SolarController {
 
     }
 
-    @CrossOrigin(origins = "*")
     @GetMapping(value="/current",  produces = APPLICATION_JSON_VALUE)
     public ResponseEntity getCurrentData() {
 
@@ -79,7 +74,6 @@ public class SolarController {
         Calendar calendar = GregorianCalendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         CurrentWeather currentWeather = openWeatherData.getOpenWeatherData().getCurrent();
-
         DTOCurrentData currentData = new DTOCurrentData();
         currentData.setCurrentDate(formatter.format(date));
         currentData.setCurrentWeatherDescription(currentWeather.getWeather().get(0).getDescription());
